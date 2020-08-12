@@ -11,7 +11,7 @@ setup(name='biogasmod',
       packages=setuptools.find_packages(),
       classifiers=[
         'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
+        'License :: BSD (3-clause)',
         'Operating System :: OS Independent',
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Waste Management',
