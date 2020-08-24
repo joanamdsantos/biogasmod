@@ -73,7 +73,7 @@ class ZeroOrder(Model):
         max_range = pd.timedelta_range(min_range, periods=(tf + 2), freq="A")
 
         # Calculates the interval of time for evaluation
-        interval = 1.0 * (max_range - min_range)
+        interval = 1.0 * (max_range - min_range) / (len(self.data) + 2)
 
         q = pd.dataframe()
         t = pd.Dataframe()
@@ -92,3 +92,28 @@ class ZeroOrder(Model):
         q = pd.concat([t, q], axis=1)
 
         return q
+
+    def plot_methanegen_rate(self, tp=50):
+        """Function to plot the methane generation rate of the data
+        for a predetermined time period.
+
+        Args:
+            tp (int): number of years to plot
+
+        Returns:
+            list: x values for the waste plot (years)
+            list: y values for the waste plot (methane generation rate)
+
+        """
+        self.time_periods = tp
+
+        min_year = min(self.data["Year"])
+        lag_years = tp - min_year
+        max_range = pd.timedelta_range(min_year, periods=(tp - lag_years),
+                                       freq="A")
+        self.data["Year"] = max_range
+
+        sns.set_style("whitegrid")
+        g = sns.relplot(x="Year", y="Waste (Mg)", kind="line",
+                        data=self.data).set_title('Waste deposition')
+        g.fig.autofmt_xdate()
