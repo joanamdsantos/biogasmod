@@ -31,8 +31,8 @@ class Waste():
     def read_data_file(self, file_name):
         """Function to read in data from a csv file, using the comma delimeter.
         The csv file should have two columnns, the first with the years of
-        waste deposition and the other with the corresponding mass deposited in
-        each in Mg.
+        waste deposition, named "Year", and the other with the corresponding
+        mass deposited in each, named "Waste (Mg)".
         The numbers are stored in the data attribute.
 
         Args:
@@ -41,9 +41,12 @@ class Waste():
         Returns:
             None
         """
+        # Read file using Pandas to read the CSV output into a DataFrame.
+        # Specify tthe Years as an index, and automatically parsed:
 
-        data_waste = pd.read_csv(filepath_or_buffer=file_name, index_col=0,
-                                 ep=',')
+        data_waste = pd.read_csv(filepath_or_buffer=file_name,
+                                 index_col='Year', parse_dates=True, ep=',')
+        # Make sure the columns are well named.
         data_waste.columns = ["Year", "Waste (Mg)"]
 
         self.data = data_waste
@@ -99,17 +102,21 @@ class Waste():
             t (integer): number of years to plot
 
         Returns:
-            None
+            list: x values for the waste plot (years)
+            list: y values for the waste plot (mass)
 
         """
 
         # t["Year") = pd.date_range(tz, periods=(tf+2), freq='A')
+        self.time_periods = tp
 
-        min_range = min(self.data["Year"])
-        max_range= pd.timedelta_range(min_range, periods=(t), freq="A")
+        min_year = min(self.data["Year"])
+        lag_years = tp - min_year
+        max_range= pd.timedelta_range(min_year, periods=(tp - lag_years),
+                                      freq="A")
         self.data["Year"] = max_range
 
         sns.set_style("whitegrid")
-        g = sns.relplot(x="Years", y="Waste (Mg)", kind="line",
+        g = sns.relplot(x="Year", y="Waste (Mg)", kind="line",
                         data=self.data).set_title('Waste deposition')
         g.fig.autofmt_xdate()
